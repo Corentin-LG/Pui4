@@ -10,23 +10,20 @@ package superpui4;
  * @author cocol
  */
 public class Grille {
-    Cellule [][] Grille;
+    Cellule [][] grille;
     final static int MAXLIGNE = 6;
     final static int MAXCOLONNE = 7;
     final static int QUATUORGAGNANT = 5;
     
     public Grille (){
-    Grille = new Cellule [MAXLIGNE][MAXCOLONNE];
-}
-    //plein de fautes
-    //se mettre d'accord de comment est codé num_colonne 0à6 ou 1à7
-    //pareil pour les lignes
-    
-    
-    //je propose   Grille = new Cellule [abscisse][ordonnee]
-    
-    
-    
+        // matrice de 6 lignes et 7 colonnes
+        grille = new Cellule [MAXLIGNE][MAXCOLONNE];
+         for (int i = 0; i < MAXLIGNE; i++){
+             for (int j = 0; j < MAXCOLONNE; j++){
+                 grille[i][j] = new Cellule();
+             }
+         }
+    }
     
     //Méthodes
     
@@ -35,8 +32,8 @@ public boolean ajouterJetonDansColonne(Jeton Jeton,int num_colonne) {// ajoute	 
 int i=0;
 boolean rep =false; //ne jamais oublier d'int à false
     for (i=MAXLIGNE-1; i>0; i--) {
-        if (Grille [i][num_colonne].jetonCourant == null) {
-           Grille [i][num_colonne].jetonCourant = Jeton; // Grille [i][7] est de classe cellule
+        if (grille [i][num_colonne].jetonCourant == null) {
+           grille [i][num_colonne].jetonCourant = Jeton; // Grille [i][7] est de classe cellule
            // au besoin pour forcer l'arre^t de la boucle i=num_colonne;
            rep = true;
            break;
@@ -56,15 +53,14 @@ boolean rep =false; //ne jamais oublier d'int à false
 
 
 public boolean etreRemplie() { //renvoie	vrai	si	la	grille	est	pleine
-boolean rep = true;
 
 int i=0;
 int j=0;
 while (j<MAXCOLONNE) {
     while (i<MAXLIGNE) {
  
-        if (Grille [i][j].jetonCourant == null) {
-        rep = false;
+        if (grille [i][j].jetonCourant == null) {
+        return false;
         }
         i++;
         
@@ -73,7 +69,7 @@ while (j<MAXCOLONNE) {
     j++;
 }
     
-return rep;
+return true;
 }
 
 public void viderGrille() {//vide	la	grille
@@ -81,7 +77,7 @@ int i=0;
 int j=0;
 while (j<MAXCOLONNE) {
     while (i<MAXLIGNE) {
-        Grille [i][j] = new Cellule();
+        grille [i][j] = new Cellule();
         i++;
         
         }
@@ -99,17 +95,17 @@ public void afficherGrilleSurConsole() {//fonction d’affichage de la grille su
         for (int j =0;j < MAXCOLONNE; j++)
         {
          
-         if (Grille [i][j].jetonCourant != null)
+         if (grille [i][j].jetonCourant != null)
          {
-           System.out.print(Grille [i][j].jetonCourant.couleur.substring(0,1));
+           System.out.print(grille [i][j].jetonCourant.couleur.substring(0,1));
            
          }
-         else if (Grille [i][j].trouNoir != false)
+         else if (grille [i][j].trouNoir != false)
          {
              System.out.print("X");
              
          }
-         else if (Grille [i][j].desintegrateur != false)
+         else if (grille [i][j].desintegrateur != false)
          {
              System.out.print("$");
              
@@ -130,7 +126,7 @@ public void afficherGrilleSurConsole() {//fonction d’affichage de la grille su
 
 public boolean celluleOccupee(int num_ligne, int num_colonne)	{//renvoie	vrai	si	la	cellule	de	coordonnées	données	est	occupée	 par	un	jeton.
     boolean rep = false;
-    if (Grille [num_ligne][num_colonne].jetonCourant != null) {
+    if (grille [num_ligne][num_colonne].jetonCourant != null) {
     rep = true;
     }
     return rep;
@@ -140,8 +136,8 @@ public boolean celluleOccupee(int num_ligne, int num_colonne)	{//renvoie	vrai	si
 
 public String lireCouleurDuJeton(int num_ligne, int num_colonne) {//renvoie	la	couleur	du	jeton	de	la	cellule	ciblée.
     String rep = null;
-    if (Grille [num_ligne][num_colonne].jetonCourant != null) {
-    rep = Grille [num_ligne][num_colonne].jetonCourant.couleur;
+    if (grille [num_ligne][num_colonne].jetonCourant != null) {
+    rep = grille [num_ligne][num_colonne].jetonCourant.couleur;
     }
     return rep;    
 }
@@ -150,8 +146,8 @@ public String lireCouleurDuJeton(int num_ligne, int num_colonne) {//renvoie	la	c
 public boolean etreGagnantePourJoueur(Joueur J1) {//renvoie vrai si la grille est gagnante	pour le joueue passé en paramètre,c’est-à-dire	 que	 4	 pions	 de	 sa	 couleur	 sont	 alignés	 en	 ligne,	 en	 colonne	ou	en	diagonale.
     boolean rep = false;  
     for (int i=0; i < MAXLIGNE; i++) { 
-        for (int j =0;j < MAXCOLONNE-QUATUORGAGNANT; j++){    
-             if (verifierLaLigne(i, j) ||verifierLaColonne(i, j) || verifierD1(i, j) || verifierD2(i, j) ){
+        for (int j =0;j < MAXCOLONNE; j++){    
+             if (verifierLaLigne(i, j)){// ||verifierLaColonne(i, j) || verifierD1(i, j) || verifierD2(i, j) ){
         rep = true;
         System.out.println("Gangnééééééééééééééé");
       }
@@ -165,26 +161,45 @@ public boolean etreGagnantePourJoueur(Joueur J1) {//renvoie vrai si la grille es
 
 private  boolean verifierLaLigne (int num_ligne , int num_colonne){
     boolean Lrep = true ;   
-   
-            for (int k=0; k<QUATUORGAGNANT && 0<(num_ligne+k) && (num_ligne+k)<MAXLIGNE && 0<(num_colonne) && (num_colonne)<MAXCOLONNE ; k++){
-                 if (Grille [num_ligne][num_colonne].jetonCourant != Grille [num_ligne+k][num_colonne].jetonCourant && Grille [num_ligne][num_colonne].jetonCourant!= null) { 
-                 Lrep = false; //changement 170 == en != donc 167 171 !=
-            }    
-                 if (Grille [num_ligne][num_colonne].jetonCourant == null){ 
-                 Lrep = false;
+        int horszone = 0;
+        int compteur = 0;
+        for( num_ligne =0; num_ligne<MAXLIGNE-1;num_ligne++){
+            for( num_colonne =0; num_colonne<MAXCOLONNE-1;num_colonne++){
+                System.out.println(this.lireCouleurDuJeton(num_ligne, num_colonne)); //debug
+                if (grille [num_ligne][num_colonne].lireCouleurDuJeton() != null){ //si la cellule trouvée à un jeton non nul
+                    for (int k=1; k <4 ; k++ ){ //déplacement de 1 à 3 vers la gauche
+                        horszone = num_colonne + k; //condition limite
+                        if (horszone < MAXCOLONNE+1) { 
+                            if (grille [num_ligne][num_colonne+k].lireCouleurDuJeton() != null && grille [num_ligne][num_colonne+k].lireCouleurDuJeton().equals(grille [num_ligne][num_colonne].lireCouleurDuJeton() != null)) {
+                                compteur ++;
+                                System.out.println(compteur);
+                                if (compteur == 3) {
+                                        return true;
+                                    }
+                            }
+                                else {
+                                compteur = 0;
+                                break; //casser horszone puis for k car 1 des jetons de la même ligne est différent ou null 
+                                }
+                        }
+                        else {
+                            break; //casser for k car condition non respecté
+                        }
+                    }
+                }
             }
         }
-       return Lrep;  
+    return false; //si tout est cassé à chaques cellule des 42 du tableau
     }
-
+/*
 private boolean verifierLaColonne (int num_ligne , int num_colonne){
     boolean Crep = true ;   
    
     for (int k=0; k<QUATUORGAGNANT && 0<(num_ligne) && (num_ligne)<MAXLIGNE && 0<(num_colonne+k) && (num_colonne+k)<MAXCOLONNE ; k++){
-        if (Grille [num_ligne][num_colonne].jetonCourant != Grille [num_ligne][num_colonne+k].jetonCourant && Grille [num_ligne][num_colonne].jetonCourant != null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant != grille [num_ligne][num_colonne+k].jetonCourant && grille [num_ligne][num_colonne].jetonCourant != null){ 
            Crep = false;
         }
-        if (Grille [num_ligne][num_colonne].jetonCourant == null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant == null){ 
                  Crep = false;
             }
       }      
@@ -195,10 +210,10 @@ private boolean verifierD1 (int num_ligne , int num_colonne){
     boolean D1rep = true ;   
    
     for (int k=0; k<QUATUORGAGNANT && 0<(num_ligne+k) && (num_ligne+k)<MAXLIGNE && 0<(num_colonne+k) && (num_colonne+k)<MAXCOLONNE ; k++){
-        if (Grille [num_ligne][num_colonne].jetonCourant != Grille [num_ligne+k][num_colonne+k].jetonCourant && Grille [num_ligne][num_colonne].jetonCourant!= null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant != grille [num_ligne+k][num_colonne+k].jetonCourant && grille [num_ligne][num_colonne].jetonCourant!= null){ 
            D1rep = false;
         }
-        if (Grille [num_ligne][num_colonne].jetonCourant == null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant == null){ 
                  D1rep = false;
             }
       }      
@@ -209,24 +224,24 @@ private boolean verifierD2 (int num_ligne , int num_colonne){
     boolean D2rep = true ;   
    
     for (int k = 0; k<QUATUORGAGNANT && 0<(num_ligne-k) && (num_ligne-k)<MAXLIGNE && 0<(num_colonne+k) && (num_colonne+k)<MAXCOLONNE ; k++){
-        if (Grille [num_ligne][num_colonne].jetonCourant != Grille [num_ligne-k][num_colonne+k].jetonCourant && Grille [num_ligne][num_colonne].jetonCourant!= null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant != grille [num_ligne-k][num_colonne+k].jetonCourant && grille [num_ligne][num_colonne].jetonCourant!= null){ 
            D2rep = false;
         }
-        if (Grille [num_ligne][num_colonne].jetonCourant == null){ 
+        if (grille [num_ligne][num_colonne].jetonCourant == null){ 
                  D2rep = false;
             }
       }      
        return D2rep;  
-    }
+    }*/
 
 
 
 public void tasserGrille(int num_ligne,int num_colonne) {//lorsqu’un	jeton	est	capturé	ou	détruit,	tasse	la	grille	en	décalant	de	 une	ligne	les	jetons	situés	au	dessus	de	la	cellule	libérée.
     for (int i=0; i < MAXLIGNE; i++) {
         for (int j =0;j < MAXCOLONNE; j++){
-        if (Grille [num_ligne][num_colonne].jetonCourant == null && Grille [num_ligne][num_colonne+1].jetonCourant != null) {
-         Grille [num_ligne][num_colonne].jetonCourant = Grille [num_ligne][num_colonne+1].jetonCourant;
-         Grille [num_ligne][num_colonne+1].jetonCourant = null;
+        if (grille [num_ligne][num_colonne].jetonCourant == null && grille [num_ligne][num_colonne+1].jetonCourant != null) {
+         grille [num_ligne][num_colonne].jetonCourant = grille [num_ligne][num_colonne+1].jetonCourant;
+         grille [num_ligne][num_colonne+1].jetonCourant = null;
         }
         }
     }
@@ -234,7 +249,7 @@ public void tasserGrille(int num_ligne,int num_colonne) {//lorsqu’un	jeton	est
 
 
 public boolean colonneRemplie (int num_colonne ){//!!!!! ajouter un paramètre oublié !!!!! renvoie	vrai	si	la	colonne	est	remplie	(on	ne	peut	y	jouer	un	Jeton)
-    if (Grille [0][num_colonne].jetonCourant != null) {//revoir codage ligne
+    if (grille [0][num_colonne].jetonCourant != null) {//revoir codage ligne
         //revoir s'il faut scanner toute la colonne
         return true;
     }
@@ -245,24 +260,24 @@ public boolean colonneRemplie (int num_colonne ){//!!!!! ajouter un paramètre o
 
 
 public boolean placerTrouNoir(int num_ligne, int num_colonne){//ajoute	 un	 trou	 noir	 à	 l’endroit	 indiqué	 et	 retourne	 vrai	 si	 l’ajout	s’est	bien	passé,	ou	faux	sinon	(exemple :	trou	noir	déjà	présent)
-    if (Grille [num_ligne][num_colonne].trouNoir != false){
+    if (grille [num_ligne][num_colonne].trouNoir != false){
         System.out.println("Il n'y a de place que pour un seul Trou Noir - le TrouNoir ");
         return false;
     }
     else {
-    Grille [num_ligne][num_colonne].trouNoir = true;  //à changer si plusieurs éléments sur la même case impossible  
+    grille [num_ligne][num_colonne].trouNoir = true;  //à changer si plusieurs éléments sur la même case impossible  
     return true;
     }
 }
 
 public boolean placerDesintegrateur(int num_ligne, int num_colonne){//ajoute	un	désintégrateur	à	l’endroit	indiqué	et	retourne	 vrai	si	l’ajout	s’est	bien	passé,	ou	faux	sinon	(exemple :	désintégrateur	déjà	présent)
 
-    if (Grille [num_ligne][num_colonne].desintegrateur != false){
+    if (grille [num_ligne][num_colonne].desintegrateur != false){
         System.out.println("Il n'y a de place que pour un seul Désingueur - le Désingueur ");
         return false;
     }
     else {
-    Grille [num_ligne][num_colonne].desintegrateur = true;  //à changer si plusieurs éléments sur la même case impossible  
+    grille [num_ligne][num_colonne].desintegrateur = true;  //à changer si plusieurs éléments sur la même case impossible  
     return true;
     }
 }
@@ -270,8 +285,8 @@ public boolean placerDesintegrateur(int num_ligne, int num_colonne){//ajoute	un	
 
 
 public boolean suppression (int num_ligne, int num_colonne) {//	supprime	 le	 jeton	 de	 la	 cellule	 visée.	 Renvoie	 vrai	 si	 la	 suppression	s’est	bien	déroulée,	ou	faux	autrement	(jeton	absent)
-    if (Grille [num_ligne][num_colonne].jetonCourant != null){
-        Grille [num_ligne][num_colonne].jetonCourant = null;
+    if (grille [num_ligne][num_colonne].jetonCourant != null){
+        grille [num_ligne][num_colonne].jetonCourant = null;
         System.out.println("Suppression de jeton réuissi");
         return true;
     }
@@ -287,7 +302,7 @@ public Jeton recupererJeton(int num_ligne, int num_colonne) {//enlève	le	jeton	
 //encours d'élaboration
 
 Jeton qqc = null; //pour sauvergarder le jeton.courant de la celulle en question
-qqc = Grille [num_ligne][num_colonne].jetonCourant; //au pire ce sera null
+qqc = grille [num_ligne][num_colonne].jetonCourant; //au pire ce sera null
 
 suppression ( num_ligne,  num_colonne);
 return qqc;
@@ -295,10 +310,10 @@ return qqc;
 //sujet à débat
 
 /*
-if (Grille [num_ligne][num_colonne].jetonCourant != null){
+if (grille [num_ligne][num_colonne].jetonCourant != null){
         Joueur.ajouterJeton.jetonCourant;
 }
-    return Grille [num_ligne][num_colonne].jetonCourant;   */
+    return grille [num_ligne][num_colonne].jetonCourant;   */
 }
     
     
